@@ -1,21 +1,27 @@
 # '''
 # Linked List hash table key/value pair
 # '''
+
+
 class LinkedPair:
     def __init__(self, key, value):
         self.key = key
         self.value = value
         self.next = None
 
+    def __repr__(self):
+        return f"<{self.key}, {self.value}>"
+
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
     that accepts string keys
     '''
+
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
-
 
     def _hash(self, key):
         '''
@@ -25,7 +31,6 @@ class HashTable:
         '''
         return hash(key)
 
-
     def _hash_djb2(self, key):
         '''
         Hash an arbitrary key using DJB2 hash
@@ -34,14 +39,12 @@ class HashTable:
         '''
         pass
 
-
     def _hash_mod(self, key):
         '''
         Take an arbitrary key and return a valid integer index
         within the storage capacity of the hash table.
         '''
         return self._hash(key) % self.capacity
-
 
     def insert(self, key, value):
         '''
@@ -54,9 +57,46 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
 
+        if self.storage[index] is not None:
 
+            pair = self.storage[index]
+
+            while pair.next and pair.key is not key:
+                pair = pair.next
+
+            if pair.key is key:
+                pair.value = value
+            else:
+                pair = LinkedPair(key, value)
+        else:
+            self.storage[index] = LinkedPair(key, value)
+
+        # # Define the storage
+        # storage = self.storage
+        # # Define the index
+        # index = self._hash_mod(key)
+        # # link the key and value in a tuple
+        # kv = LinkedPair(key, value)
+
+        # if storage[index] is not None:
+        #     '''
+        #     if there is already a linked list at this index,
+        #     traverse the list until you find the key or next is None
+        #     '''
+        #     current_pair = storage[index]
+
+        #     while current_pair.next and current_pair.key is not key:
+        #         current_pair = current_pair.next
+
+        #     if current_pair.key is key:
+        #         current_pair.value = value
+        #     else:
+        #         current_pair.next = kv
+
+        # else:
+        #     storage[index] = kv
 
     def remove(self, key):
         '''
@@ -66,8 +106,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
 
+        if self.storage[index] is not None and self.storage[index].key == key:
+            self.storage[index] = None
+        else:
+            print("Warning: key does not exist")
 
     def retrieve(self, key):
         '''
@@ -77,18 +121,25 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
-
+        index = self._hash_mod(key)
+        if self.storage[index] is not None and self.storage[index].key == key:
+            return self.storage[index].value
+        else:
+            return None
 
     def resize(self):
         '''
         Doubles the capacity of the hash table and
         rehash all key/value pairs.
-
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
 
+        new_storage = [None] * self.capacity
+
+        for i in range(len(self.storage)):
+            new_storage[i] = self.storage[i]
+        self.storage = new_storage
 
 
 if __name__ == "__main__":
